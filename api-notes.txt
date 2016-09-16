@@ -1,0 +1,129 @@
+#============================================================================
+Clean, compile, run tests, package, execute
+#============================================================================
+1) mvn clean package
+2) $ java -jar deckservice-1.0.0.jar
+
+
+#============================================================================
+Deploying a boot executable jar file with embedded init.d script on linux
+#============================================================================
+The startup script option has been enabled in the Maven POM for this. 
+Notice the beginning of the executable jar file shows the contents of this
+script...
+ 
+$ head -10 deckservice-1.0.0.jar
+#!/bin/bash
+#
+#    .   ____          _            __ _ _
+#   /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+#  ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+#   \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+#    '  |____| .__|_| |_|_| |_\__, | / / / /
+#   =========|_|==============|___/=/_/_/_/
+#   :: Spring Boot Startup Script ::
+#
+
+
+
+#============================================================================
+Configuring the shuffling algorithm - Options
+#============================================================================
+
+1) From application.properties, assign one of: SimpleDeckShuffler, 
+  HandShufflingDeckShuffler, ReverseShuffler
+
+Ex:
+shuffleMethod=HandShufflingDeckShuffler
+
+
+2) On the command line it is also possible to specify one of the shuffle
+   methods. Note that it defaults to SimpleDeckShuffler if not specified, 
+   or if spelled incorrectly:
+   
+$ java -jar deckservice-1.0.0.jar --shuffleMethod=SimpleDeckShuffler
+$ java -jar deckservice-1.0.0.jar --shuffleMethod=HandShufflingDeckShuffler
+$ java -jar deckservice-1.0.0.jar --shuffleMethod=ReverseShuffler
+
+
+3) Specify a config file from the command line that has the property defined in it
+   (as in shuffleMethod=HandShufflingDeckShuffler):
+   
+$ java -jar deckservice-1.0.0.jar --spring.config.location=classpath:/default.properties
+
+
+4) NOT YET SUPPORTED - put the setting in an environment variable or use JNDI
+
+
+
+#============================================================================
+Simple use case of the API with two decks named Bicycle and player
+#============================================================================
+
+1) PUT  http://localhost:8080/deck/Bicycle
+
+
+2) GET  http://localhost:8080/deck/Bicycle
+
+	which returns:
+	[
+	    "ACE-DIAMONDS",
+	    "ACE-CLUBS",
+	    "ACE-HEARTS",
+	    "ACE-SPADES",
+	    "DEUCE-DIAMONDS",
+	    "DEUCE-CLUBS",
+	    "DEUCE-HEARTS",
+	    "DEUCE-SPADES",
+	    ...
+	]
+
+
+
+3) POST  http://localhost:8080/deck/
+Content-Type: application/json
+{"deckName" : "Bicycle"}
+
+
+
+4) GET http://localhost:8080/deck/Bicycle
+
+	which returns something shuffled:
+	[
+	    "NINE-SPADES",
+	    "EIGHT-SPADES",
+	    "SEVEN-DIAMONDS",
+	    "ACE-SPADES",
+	    "DEUCE-HEARTS",
+	    "FOUR-HEARTS",
+	    "ACE-HEARTS",
+	    "SIX-HEARTS",
+	    ...
+	]
+
+
+5) PUT  http://localhost:8080/deck/player
+
+
+6) GET  http://localhost:8080/deck/
+
+	which returns the stored decks:
+	[
+	  "Bicycle",
+	  "player"
+	]
+
+
+
+5) DELETE  http://localhost:8080/deck/Bicycle
+6) DELETE  http://localhost:8080/deck/player
+
+
+6) GET http://localhost:8080/deck/Bicycle
+
+	which returns:
+    [
+    ]
+
+
+
